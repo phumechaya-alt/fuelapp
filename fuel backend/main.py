@@ -14,7 +14,7 @@ app.add_middleware(CORSMiddleware, allow_origins=[], allow_credentials=True, all
 # ⚠️ ВСТАВЬ СЮДА СВОЮ СТРОКУ ПОДКЛЮЧЕНИЯ ИЗ SUPABASE
 DATABASE_URL = "postgresql://postgres:Popa101za1!@db.suvefdfxmijlqnyggflj.supabase.co:5432/postgres"
 
-def get_db_connection()
+def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
 # Инициализация таблиц в облаке при первом запуске сервера
