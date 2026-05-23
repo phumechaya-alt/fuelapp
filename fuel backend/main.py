@@ -22,21 +22,6 @@ DATABASE_URL = "postgresql://postgres:Popa101za1!@db.suvefdfxmijlqnyggflj.supaba
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
-
-# Инициализация таблиц в облаке
-try:
-    with get_db_connection() as conn:
-        with conn.cursor() as cursor:
-            # Таблица машин
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS pwa_cars (
-                    id SERIAL PRIMARY KEY,
-                    name TEXT UNIQUE NOT NULL,
-                    color TEXT NOT NULL,
-                    visible BOOLEAN DEFAULT TRUE,
-                    deleted BOOLEAN DEFAULT FALSE
-                )
-            """)
             # Таблица заправок
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS pwa_refuels (
@@ -91,6 +76,21 @@ def save_cars(cars: List[CarItem]):
                 )
             conn.commit()
     return {"status": "ok"}
+
+# Упрощенная инициализация без сложного синтаксиса
+@app.on_event("startup")
+def startup_event():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("CREATE TABLE IF NOT EXISTS pwa_cars (name TEXT PRIMARY KEY, color TEXT, visible BOOLEAN, deleted BOOLEAN)")
+        cur.execute("CREATE TABLE IF NOT EXISTS pwa_refuels (id SERIAL PRIMARY KEY, car TEXT, octane TEXT, date TEXT, price REAL, liters REAL, odometer TEXT, distance REAL)")
+        conn.commit()
+        cur.close()
+        conn.close()
+        print("БД готова!")
+    except Exception as e:
+        print(f"Ошибка БД: {e}")
 
 # --- API ЭНДПОИНТЫ ДЛЯ ЗАПРАВОК ---
 @app.get("/api/refuels", response_model=List[RefuelItem])
