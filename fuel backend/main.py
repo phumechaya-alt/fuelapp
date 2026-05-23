@@ -12,7 +12,7 @@ app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=[], allow_credentials=True, allow_methods=[], allow_headers=[])
 
 # ⚠️ ВСТАВЬ СЮДА СВОЮ СТРОКУ ПОДКЛЮЧЕНИЯ ИЗ SUPABASE
-DATABASE_URL = postgresql://postgres:Popa101za1!@db.suvefdfxmijlqnyggflj.supabase.co:5432/postgres
+DATABASE_URL = "postgresql://postgres:Popa101za1!@db.suvefdfxmijlqnyggflj.supabase.co:5432/postgres"
 
 def get_db_connection()
     return psycopg2.connect(DATABASE_URL)
