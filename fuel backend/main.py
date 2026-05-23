@@ -8,7 +8,7 @@ from psycopg2.extras import RealDictCursor
 
 app = FastAPI()
 
-# Правильная настройка CORS — разрешаем фронтенду слать данные
+# Настройка CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,30 +17,28 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Твоя ссылка на базу Supabase
+# Твоя ссылка Supabase
 DATABASE_URL = "postgresql://postgres:Popa101za1!@db.suvefdfxmijlqnyggflj.supabase.co:6543/postgres"
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
-            # Таблица заправок
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS pwa_refuels (
-                    id SERIAL PRIMARY KEY,
-                    car TEXT NOT NULL,
-                    octane TEXT NOT NULL,
-                    date TEXT NOT NULL,
-                    price REAL NOT NULL,
-                    liters REAL NOT NULL,
-                    odometer TEXT NOT NULL,
-                    distance REAL
-                )
-            """)
-            conn.commit()
-    print("База данных PostgreSQL успешно инициализирована!")
-except Exception as e:
-    print("Ошибка инициализации БД:", e)
 
-# Модели данных для проверки запросов
+# Авто-создание таблиц при старте
+@app.on_event("startup")
+def startup_event():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("CREATE TABLE IF NOT EXISTS pwa_cars (name TEXT PRIMARY KEY, color TEXT, visible BOOLEAN, deleted BOOLEAN)")
+        cur.execute("CREATE TABLE IF NOT EXISTS pwa_refuels (id SERIAL PRIMARY KEY, car TEXT, octane TEXT, date TEXT, price REAL, liters REAL, odometer TEXT, distance REAL)")
+        conn.commit()
+        cur.close()
+        conn.close()
+        print("БД готова!")
+    except Exception as e:
+        print(f"Ошибка БД: {e}")
+
+# Модели данных
 class CarItem(BaseModel):
     name: str
     color: str
@@ -56,7 +54,7 @@ class RefuelItem(BaseModel):
     odometer: str
     distance: Optional[float] = None
 
-# --- API ЭНДПОИНТЫ ДЛЯ МАШИН ---
+# --- API ---
 @app.get("/api/cars", response_model=List[CarItem])
 def get_cars():
     with get_db_connection() as conn:
@@ -77,22 +75,6 @@ def save_cars(cars: List[CarItem]):
             conn.commit()
     return {"status": "ok"}
 
-# Упрощенная инициализация без сложного синтаксиса
-@app.on_event("startup")
-def startup_event():
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS pwa_cars (name TEXT PRIMARY KEY, color TEXT, visible BOOLEAN, deleted BOOLEAN)")
-        cur.execute("CREATE TABLE IF NOT EXISTS pwa_refuels (id SERIAL PRIMARY KEY, car TEXT, octane TEXT, date TEXT, price REAL, liters REAL, odometer TEXT, distance REAL)")
-        conn.commit()
-        cur.close()
-        conn.close()
-        print("БД готова!")
-    except Exception as e:
-        print(f"Ошибка БД: {e}")
-
-# --- API ЭНДПОИНТЫ ДЛЯ ЗАПРАВОК ---
 @app.get("/api/refuels", response_model=List[RefuelItem])
 def get_refuels():
     with get_db_connection() as conn:
