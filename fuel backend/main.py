@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 # Твоя ссылка Supabase
-DATABASE_URL = "postgresql://postgres:Popa101za1!@db.suvefdfxmijlqnyggflj.supabase.co:6543/postgres?sslmode=require&target_session_attrs=read-write"
+DATABASE_URL = "postgresql://neondb_owner:npg_AIgypna9LQl1@ep-plain-cell-aleep8yk-pooler.c-3.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
