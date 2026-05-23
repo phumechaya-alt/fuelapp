@@ -18,7 +18,7 @@ def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
 # Инициализация таблиц в облаке при первом запуске сервера
-try
+try:
     with get_db_connection() as conn
         with conn.cursor() as cursor
             # Таблица машин
