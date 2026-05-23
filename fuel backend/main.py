@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 # Твоя ссылка Supabase
-DATABASE_URL = "postgresql://postgres:Popa101za1!@db.suvefdfxmijlqnyggflj.supabase.co:6543/postgres"
+DATABASE_URL = "postgresql://postgres:Popa101za1!@db.suvefdfxmijlqnyggflj.supabase.co:6543/postgres?sslmode=require&target_session_attrs=read-write"
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
